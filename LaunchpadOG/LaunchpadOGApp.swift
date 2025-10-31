@@ -30,6 +30,9 @@ struct VisualEffectView: NSViewRepresentable {
 
 @main
 struct LaunchpadOGApp: App {
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
+    
     @State var screenWidth: CGFloat = 0
     @State var screenHeight: CGFloat = 0
     var body: some Scene {
@@ -65,6 +68,14 @@ struct LaunchpadOGApp: App {
                 
                 Button("Decrease Font Size") {}
                     .keyboardShortcut("-", modifiers: .command)
+            }
+            CommandMenu ("Settings") {
+                Button("Open Settings") {
+                    SheetManager.shared.present {
+                        SettingsPage()
+                    }
+                }
+                    .keyboardShortcut(",", modifiers: .command)
             }
         }
     }

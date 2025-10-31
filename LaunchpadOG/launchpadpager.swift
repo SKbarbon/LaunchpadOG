@@ -8,7 +8,7 @@ struct LaunchpadPagerView: View {
     @Binding var pages: [LaunchpadPagerPagesContent]
     
     @State private var gridSpacing: CGFloat = 20
-    @State var iconsSize: CGFloat = 150
+    @State var iconsSize: CGFloat = 140
     
     @State private var scrollID: LaunchpadPagerPagesContent.ID?
     @State private var rows = [GridItem(.adaptive(minimum: 80))]
@@ -36,6 +36,7 @@ struct LaunchpadPagerView: View {
                                             Text(item.name)
                                         }
                                     }
+                                    
                                     .frame(width: iconsSize)
                                     .onTapGesture {
                                         if item.type == .App {

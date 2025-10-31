@@ -8,17 +8,12 @@ struct ContentView: View {
     @State var currentPage: Int = 0
     @State var pages: [LaunchpadPagerPagesContent] = []
     
-    @FocusState var searchFieldIsFocused: Bool
     var body: some View {
         VStack {
             HStack {
                 Image(systemName: "magnifyingglass")
                 TextField("Search", text: $searchingContent)
-                    .focused($searchFieldIsFocused)
                     .frame(width: 220, height: 50)
-                    .onAppear() {
-                        searchFieldIsFocused=true
-                    }
             }
             LaunchpadPagerView(blocksList: $blocksList, currentPage: $currentPage, pages: $pages)
                 .padding(.trailing, 20)
