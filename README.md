@@ -1,6 +1,7 @@
 # LaunchpadOG
 
 ### The classic Launchpad. Reimagined.
+[![Download LaunchpadOG](https://img.shields.io/badge/⬇️_Download-LaunchpadOG.app-blue?style=for-the-badge)](https://github.com/SKbarbon/LaunchpadOG/releases)
 
 After the latest macOS update, Apple replaced Launchpad with a simplified apps viewer through Spotlight. **LaunchpadOG** brings back what was lost — the clean grid of icons, the fluid transitions, and the simplicity that made the original Launchpad so iconic.
 
