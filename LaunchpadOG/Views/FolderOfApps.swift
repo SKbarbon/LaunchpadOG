@@ -1,42 +1,51 @@
 import SwiftUI
-
-
+import SwiftData
 
 struct FolderOfApps: View {
-    @State var viewSize: CGFloat
+    @Environment(\.modelContext) private var context
+    @State private var settings: SettingsDataModel?
+    
     @State var folderModel: BlockModel
     
     @State var subApps: [BlockModel] = []
     
-    @State var gridRows = [GridItem(.flexible(minimum: .infinity))]
+    // Create 3 flexible rows for a 3x3 grid
+    
     var body: some View {
+        let viewSize: CGFloat = CGFloat(settings?.homeIconSize ?? 140)
         ZStack {
             Rectangle()
-                .background(.white)
-                .cornerRadius(viewSize/6)
-                .frame(width: viewSize-35, height: viewSize-35)
+                .fill(.gray.opacity(0.7))
+                .cornerRadius(viewSize / 6)
+                .frame(width: viewSize - 35, height: viewSize - 35)
             
-            HStack {
-                ForEach(subApps) {app in
-                    Image(nsImage: app.icon!)
-                        .resizable().scaledToFit()
-                        .frame(width: 50, height: 50)
+            VStack {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 3), alignment: .leading, spacing: 10) {
+                    ForEach(subApps.prefix(9)) { app in
+                        Image(nsImage: app.icon!)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: (viewSize - 60) / 3, height: (viewSize - 60) / 3)
+                    }
                 }
+                Spacer()
             }
-            .frame(width: viewSize-35, height: viewSize-35)
+            .scaleEffect(0.8)
+            .frame(width: viewSize - 45, height: viewSize - 45, alignment: .leading)
         }
         .padding(20)
-        .onAppear() {
+        .onAppear {
+            // Prepare settings data
+            settings = SettingsDataModel.shared(in: context)
             getAppsOfFolder()
         }
     }
     
     func getAppsOfFolder() {
         subApps.removeAll()
-        let appFolders = [ folderModel.path.path ]
-
+        let appFolders = [folderModel.path.path]
         var allItems: [URL] = []
-
+        
         for folder in appFolders {
             let url = URL(fileURLWithPath: folder)
             if let contents = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil) {
@@ -53,17 +62,13 @@ struct FolderOfApps: View {
                 let type = values?.typeIdentifier ?? ""
                 
                 if type == "com.apple.application-bundle" {
-                    // ✅ It's an actual app bundle
                     let icon = NSWorkspace.shared.icon(forFile: item.path)
                     icon.size = NSSize(width: 64, height: 64)
                     subApps.append(BlockModel(name: item.lastPathComponent, type: .App, path: item, icon: icon))
                 }
             }
             
-            // Make sure only 3 apps are included as a limit
-            if subApps.count == 3 {
-                break
-            }
+            if subApps.count == 9 { break } // Limit to 3x3 grid
         }
     }
 }

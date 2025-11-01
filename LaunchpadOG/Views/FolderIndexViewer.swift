@@ -9,8 +9,8 @@ struct FolderIndexViewer: View {
     @State var pages: [LaunchpadPagerPagesContent] = []
     var body: some View {
         VStack {
-            LaunchpadPagerView(blocksList: $blocksList, currentPage: $currentPage, pages: $pages, iconsSize: 100)
-                .padding(25)
+            LaunchpadPagerView(viewIsFolder: true,blocksList: $blocksList, currentPage: $currentPage, pages: $pages)
+                .padding(20)
             HStack {
                 Button("ESC to close") {
                     SheetManager.shared.dismiss()

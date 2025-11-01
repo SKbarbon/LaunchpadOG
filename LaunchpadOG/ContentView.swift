@@ -1,8 +1,11 @@
 import SwiftUI
+import SwiftData
 import Foundation
 
 struct ContentView: View {
+    @State var blockListForSearch: [BlockModel] = []
     @State var blocksList: [BlockModel] = []
+    
     @State var searchingContent: String = ""
     
     @State var currentPage: Int = 0
@@ -16,9 +19,7 @@ struct ContentView: View {
                     .frame(width: 220, height: 50)
             }
             LaunchpadPagerView(blocksList: $blocksList, currentPage: $currentPage, pages: $pages)
-                .padding(.trailing, 20)
-                .padding(.leading, 20)
-                .padding(.bottom, 20)
+                .padding(20)
             HStack {
                 ForEach(0..<pages.count, id: \.self) { index in
                     Circle()
@@ -59,47 +60,35 @@ struct ContentView: View {
     
     func updateListDirApplications () {
         blocksList.removeAll()
-        let appFolders = [
-            "/Applications",
-            "/System/Applications",
-            NSHomeDirectory() + "/Applications"
-        ]
+        blocksList = listDirApplications()
+    }
+    
+    func searchForItems(prompt: String) {
+        var newList: [BlockModel] = []
+        var seen = Set<URL>() // to prevent duplicates
 
-        var allItems: [URL] = []
-
-        for folder in appFolders {
-            let url = URL(fileURLWithPath: folder)
-            if let contents = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil) {
-                allItems.append(contentsOf: contents)
-            }
-        }
-
-        for item in allItems {
-            guard let values = try? item.resourceValues(forKeys: [.isDirectoryKey]),
-                  let isDir = values.isDirectory else { continue }
-
-            if isDir {
-                let values = try? item.resourceValues(forKeys: [.typeIdentifierKey])
-                let type = values?.typeIdentifier ?? ""
-
-                if type == "com.apple.application-bundle" {
-                    // ✅ It's an actual app bundle
-                    let icon = NSWorkspace.shared.icon(forFile: item.path)
-                    icon.size = NSSize(width: 64, height: 64)
-                    blocksList.append(BlockModel(name: item.lastPathComponent, type: .App, path: item, icon: icon))
-                } else {
-                    // 📁 It's a folder
-                    blocksList.append(BlockModel(name: item.lastPathComponent, type: .Folder, path: item))
+        for item in blocksList {
+            if item.type == .App {
+                if item.name.lowercased().contains(prompt.lowercased()) {
+                    if !seen.contains(item.path) {
+                        newList.append(item)
+                        seen.insert(item.path)
+                    }
+                }
+            } else if item.type == .Folder {
+                // Pass folder path so it only lists its own apps
+                let appsInFolder = listDirApplications(customAppFolders: [item.path.path])
+                for app in appsInFolder {
+                    if app.name.lowercased().contains(prompt.lowercased()) {
+                        if !seen.contains(app.path) {
+                            newList.append(app)
+                            seen.insert(app.path)
+                        }
+                    }
                 }
             }
         }
-    }
-    
-    func searchForItems (prompt: String) {
-        for it in blocksList {
-            if it.name.lowercased().starts(with: prompt.lowercased()) == false {
-                blocksList.removeAll(where: { $0.name.lowercased() == it.name.lowercased() })
-            }
-        }
+
+        blocksList = newList
     }
 }

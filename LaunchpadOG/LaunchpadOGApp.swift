@@ -1,6 +1,7 @@
 
 
 import SwiftUI
+import SwiftData
 import AppKit
 
 // SwiftUI wrapper for NSVisualEffectView
@@ -61,6 +62,7 @@ struct LaunchpadOGApp: App {
             }
             .unifiedSheetHost()
         }
+        .modelContainer(for: SettingsDataModel.self)
         .commands {
             CommandMenu ("View") {
                 Button("Increase Font Size") {}
