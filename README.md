@@ -7,6 +7,7 @@ After the latest macOS update, Apple replaced Launchpad with a simplified apps v
 ---
 
 ## Overview
+<img width="1728" height="1117" alt="Screenshot 2025-11-01 at 8 23 02 AM" src="https://github.com/user-attachments/assets/22221ae9-b4fb-4ffe-8bbb-2b832bff0aa7" />
 
 **LaunchpadOG** is a lightweight, open-source macOS app built in SwiftUI. It faithfully recreates the look and behavior of the original macOS Launchpad, focusing on speed, minimalism, and usability.
 
